@@ -22,7 +22,6 @@ public class Main extends javax.swing.JFrame {
         queryResponse = new javax.swing.JTextArea();
         flowerLabel = new javax.swing.JLabel();
         sightingLabel = new javax.swing.JLabel();
-        flowerIndex = new javax.swing.JTextArea();
         flowerGenus = new javax.swing.JTextArea();
         flowerSpecies = new javax.swing.JTextArea();
         flowerComname = new javax.swing.JTextArea();
@@ -57,13 +56,10 @@ public class Main extends javax.swing.JFrame {
 
         debugLabel.setText("Run a query!");
         sightingLabel.setText("Insert sighting: name, person, location, YYYY-MM-DD");
-        flowerLabel.setText("Update flower: Index, genus, species, comname");
+        flowerLabel.setText("Update flower: genus, species, comname. Make sure to select in the dropdown!");
         
         
-        String[] rets = pullNames();
-        for(String single : rets) {
-        	nameSelector.addItem(single);
-        }
+        updateNameSelector();
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -79,7 +75,6 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                             .addComponent(flowerLabel))
                     .addGroup(layout.createSequentialGroup()
-                            .addComponent(flowerIndex)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(flowerGenus)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -119,7 +114,6 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(flowerLabel))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(flowerIndex)
                         .addComponent(flowerGenus)
                         .addComponent(flowerSpecies)
                         .addComponent(flowerComname)
@@ -141,7 +135,14 @@ public class Main extends javax.swing.JFrame {
         pack();
     }
     
-    private void queryButtonActionPerformed(java.awt.event.ActionEvent evt) {
+    private void updateNameSelector() {
+    	String[] rets = pullNames();
+        for(String single : rets) {
+        	nameSelector.addItem(single);
+        }
+	}
+
+	private void queryButtonActionPerformed(java.awt.event.ActionEvent evt) {
     	queryContents = getQuery((String) nameSelector.getSelectedItem());
     	String lineDelimited = "";
     	for(String s : queryContents) {
@@ -152,7 +153,25 @@ public class Main extends javax.swing.JFrame {
     	debugLabel.setText("Repopulated list: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()));
     }
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {
-    	//Run a db call with the parameters we have
+    	String sql = "UPDATE flowers SET genus = ? , "
+                + "species = ? "
+    			+ "comname = ?"
+                + "WHERE comname = ?";
+ 
+        try (Connection conn = this.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+ 
+            // set the corresponding param
+            pstmt.setString(1, flowerGenus.getText());
+            pstmt.setString(2, flowerSpecies.getText());
+            pstmt.setString(3, flowerComname.getText());
+            pstmt.setString(4, (String) nameSelector.getSelectedItem());
+            // update 
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    	updateNameSelector();
     	debugLabel.setText("Updated item: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()));
     }
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {
@@ -242,7 +261,6 @@ public class Main extends javax.swing.JFrame {
     //For updates
     
     private javax.swing.JLabel flowerLabel;
-    private javax.swing.JTextArea flowerIndex;
     private javax.swing.JTextArea flowerGenus;
     private javax.swing.JTextArea flowerSpecies;
     private javax.swing.JTextArea flowerComname;
