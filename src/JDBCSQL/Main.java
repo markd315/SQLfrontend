@@ -154,7 +154,7 @@ public class Main extends javax.swing.JFrame {
     }
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {
     	String sql = "UPDATE flowers SET genus = ? , "
-                + "species = ? "
+                + "species = ? ,"
     			+ "comname = ?"
                 + "WHERE comname = ?";
  
@@ -166,7 +166,6 @@ public class Main extends javax.swing.JFrame {
             pstmt.setString(2, flowerSpecies.getText());
             pstmt.setString(3, flowerComname.getText());
             pstmt.setString(4, (String) nameSelector.getSelectedItem());
-            // update 
             pstmt.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
