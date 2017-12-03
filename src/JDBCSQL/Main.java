@@ -136,6 +136,7 @@ public class Main extends javax.swing.JFrame {
     }
     
     private void updateNameSelector() {
+    	nameSelector.removeAllItems();
     	String[] rets = pullNames();
         for(String single : rets) {
         	nameSelector.addItem(single);
@@ -157,7 +158,7 @@ public class Main extends javax.swing.JFrame {
                 + "species = ? ,"
     			+ "comname = ?"
                 + "WHERE comname = ?";
- 
+    	System.out.println((String) nameSelector.getSelectedItem());
         try (Connection conn = this.connect();
                 PreparedStatement pstmt = conn.prepareStatement(sql)) {
  
