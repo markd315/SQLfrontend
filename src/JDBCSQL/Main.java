@@ -2,6 +2,7 @@ package JDBCSQL;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -28,6 +29,7 @@ public class Main extends javax.swing.JFrame {
         sightingName = new javax.swing.JTextArea();
         sightingPerson = new javax.swing.JTextArea();
         sightingLocation = new javax.swing.JTextArea();
+        sightingDate = new javax.swing.JTextArea();
         
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("SQLite frontend");
@@ -54,7 +56,7 @@ public class Main extends javax.swing.JFrame {
         });
 
         debugLabel.setText("Run a query!");
-        sightingLabel.setText("Insert sighting: name, person, location");
+        sightingLabel.setText("Insert sighting: name, person, location, YYYY-MM-DD");
         flowerLabel.setText("Update flower: Index, genus, species, comname");
         
         
@@ -95,6 +97,8 @@ public class Main extends javax.swing.JFrame {
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(sightingLocation)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(sightingDate)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(insertButton))
                 	.addGroup(layout.createSequentialGroup()
                         .addComponent(queryButton))
@@ -126,6 +130,7 @@ public class Main extends javax.swing.JFrame {
                         .addComponent(sightingName)
                         .addComponent(sightingPerson)
                         .addComponent(sightingLocation)
+                        .addComponent(sightingDate)
                         .addComponent(insertButton))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(queryResponse))        
@@ -151,11 +156,22 @@ public class Main extends javax.swing.JFrame {
     	debugLabel.setText("Updated item: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()));
     }
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {
-    	//Run a db call with the parameters we have
+    	String sql = "INSERT INTO sightings(name,person,location,sighted) VALUES(?,?,?,?)";
+    	 
+        try (Connection conn = this.connect();
+                PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, sightingName.getText());
+            pstmt.setString(2, sightingPerson.getText());
+            pstmt.setString(3, sightingLocation.getText());
+            pstmt.setString(4, sightingDate.getText());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
     	debugLabel.setText("Inserted item: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()));
     }
     private String[] getQuery(String queryName) {
-    	String sql = "SELECT * FROM sightings WHERE \"" + queryName + "\"=name ORDER BY sighted LIMIT 10";
+    	String sql = "SELECT * FROM sightings WHERE \"" + queryName + "\"=name ORDER BY sighted desc LIMIT 10";
         ArrayList<String> resList = new ArrayList<String>();
     	
         try (Connection conn = this.connect();
@@ -236,5 +252,5 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JTextArea sightingName;
     private javax.swing.JTextArea sightingPerson;
     private javax.swing.JTextArea sightingLocation;
-    //Just use UTCNOW for new sighting inserts.
+    private javax.swing.JTextArea sightingDate;
 }
