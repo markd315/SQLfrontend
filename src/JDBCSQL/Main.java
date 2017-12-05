@@ -14,6 +14,7 @@ public class Main extends javax.swing.JFrame {
 	private static final long serialVersionUID = 1L;
 	/** Creates new form */
     public Main() {
+    	db = new DatabaseAPI();
     	debugLabel = new javax.swing.JLabel();
         nameSelector = new javax.swing.JComboBox<String>();
         queryButton = new javax.swing.JButton();
