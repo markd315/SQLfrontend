@@ -13,6 +13,29 @@ public class Main extends javax.swing.JFrame {
     
 	private static final long serialVersionUID = 1L;
 	/** Creates new form */
+	private DatabaseAPI db;
+    private javax.swing.JComboBox<String> nameSelector;
+    private javax.swing.JButton queryButton;
+    private javax.swing.JTextArea queryResponse;
+    private javax.swing.JButton updateButton;
+    private javax.swing.JButton insertButton;
+    private javax.swing.JLabel debugLabel;
+    
+    //To connect queryResponse to flowerIndex:
+    private String[] queryContents;
+  
+    //For updates 
+    private javax.swing.JLabel flowerLabel;
+    private javax.swing.JTextArea flowerGenus;
+    private javax.swing.JTextArea flowerSpecies;
+    private javax.swing.JTextArea flowerComname;
+   
+    //For inserts
+    private javax.swing.JLabel sightingLabel;
+    private javax.swing.JTextArea sightingPerson;
+    private javax.swing.JTextArea sightingLocation;
+    private javax.swing.JTextArea sightingDate;
+    
     public Main() {
     	db = new DatabaseAPI();
     	debugLabel = new javax.swing.JLabel();
@@ -168,28 +191,5 @@ public class Main extends javax.swing.JFrame {
             }
         });
     }
-    
-    private DatabaseAPI db;
-    private javax.swing.JComboBox<String> nameSelector;
-    private javax.swing.JButton queryButton;
-    private javax.swing.JTextArea queryResponse;
-    private javax.swing.JButton updateButton;
-    private javax.swing.JButton insertButton;
-    private javax.swing.JLabel debugLabel;
-    
-    //To connect queryResponse to flowerIndex:
-    private String[] queryContents;
-  
-    //For updates
-    
-    private javax.swing.JLabel flowerLabel;
-    private javax.swing.JTextArea flowerGenus;
-    private javax.swing.JTextArea flowerSpecies;
-    private javax.swing.JTextArea flowerComname;
-    
-    //For inserts
-    private javax.swing.JLabel sightingLabel;
-    private javax.swing.JTextArea sightingPerson;
-    private javax.swing.JTextArea sightingLocation;
-    private javax.swing.JTextArea sightingDate;
+   
 }
