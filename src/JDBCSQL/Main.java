@@ -26,7 +26,6 @@ public class Main extends javax.swing.JFrame {
         flowerGenus = new javax.swing.JTextArea();
         flowerSpecies = new javax.swing.JTextArea();
         flowerComname = new javax.swing.JTextArea();
-        sightingName = new javax.swing.JTextArea();
         sightingPerson = new javax.swing.JTextArea();
         sightingLocation = new javax.swing.JTextArea();
         sightingDate = new javax.swing.JTextArea();
@@ -56,8 +55,8 @@ public class Main extends javax.swing.JFrame {
         });
 
         debugLabel.setText("Run a query!");
-        sightingLabel.setText("Insert sighting: name, person, location, YYYY-MM-DD");
-        flowerLabel.setText("Update flower: genus, species, comname. Make sure to select in the dropdown!");
+        sightingLabel.setText("Insert sighting for this flower: person, location, YYYY-MM-DD");
+        flowerLabel.setText("Update this flower: genus, species, new comname");
         
         
         updateNameSelector();
@@ -87,9 +86,7 @@ public class Main extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                     		.addComponent(sightingLabel))
                     .addGroup(layout.createSequentialGroup()
-                    		.addComponent(sightingName)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(sightingPerson)
+                    		.addComponent(sightingPerson)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(sightingLocation)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -122,7 +119,6 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(sightingLabel))
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(sightingName)
                         .addComponent(sightingPerson)
                         .addComponent(sightingLocation)
                         .addComponent(sightingDate)
@@ -159,7 +155,7 @@ public class Main extends javax.swing.JFrame {
     	updateNameSelector();
     }
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {
-    	debugLabel.setText(db.insert(sightingName.getText(), sightingPerson.getText(), sightingLocation.getText(), sightingDate.getText()));
+    	debugLabel.setText(db.insert((String) nameSelector.getSelectedItem(), sightingPerson.getText(), sightingLocation.getText(), sightingDate.getText()));
     }
     
     
@@ -193,7 +189,6 @@ public class Main extends javax.swing.JFrame {
     
     //For inserts
     private javax.swing.JLabel sightingLabel;
-    private javax.swing.JTextArea sightingName;
     private javax.swing.JTextArea sightingPerson;
     private javax.swing.JTextArea sightingLocation;
     private javax.swing.JTextArea sightingDate;
