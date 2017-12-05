@@ -137,14 +137,14 @@ public class Main extends javax.swing.JFrame {
     
     private void updateNameSelector() {
     	nameSelector.removeAllItems();
-    	String[] rets = pullNames();
+    	String[] rets = db.listFlowers();
         for(String single : rets) {
         	nameSelector.addItem(single);
         }
 	}
 
 	private void queryButtonActionPerformed(java.awt.event.ActionEvent evt) {
-    	queryContents = getQuery((String) nameSelector.getSelectedItem());
+    	queryContents = db.listSightings((String) nameSelector.getSelectedItem());
     	String lineDelimited = "";
     	for(String s : queryContents) {
     		lineDelimited+=s;
@@ -154,91 +154,15 @@ public class Main extends javax.swing.JFrame {
     	debugLabel.setText("Repopulated list: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()));
     }
     private void updateButtonActionPerformed(java.awt.event.ActionEvent evt) {
-    	String sql = "UPDATE flowers SET genus = ? , "
-                + "species = ? ,"
-    			+ "comname = ?"
-                + "WHERE comname = ?";
-    	System.out.println((String) nameSelector.getSelectedItem());
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
- 
-            // set the corresponding param
-            pstmt.setString(1, flowerGenus.getText());
-            pstmt.setString(2, flowerSpecies.getText());
-            pstmt.setString(3, flowerComname.getText());
-            pstmt.setString(4, (String) nameSelector.getSelectedItem());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
+    	debugLabel.setText(db.update(flowerGenus.getText(), flowerSpecies.getText(), flowerComname.getText(), (String) nameSelector.getSelectedItem()));
     	updateNameSelector();
-    	debugLabel.setText("Updated item: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()));
     }
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {
-    	String sql = "INSERT INTO sightings(name,person,location,sighted) VALUES(?,?,?,?)";
-    	 
-        try (Connection conn = this.connect();
-                PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, sightingName.getText());
-            pstmt.setString(2, sightingPerson.getText());
-            pstmt.setString(3, sightingLocation.getText());
-            pstmt.setString(4, sightingDate.getText());
-            pstmt.executeUpdate();
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    	debugLabel.setText("Inserted item: " + new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date()));
+    	debugLabel.setText(db.insert(sightingName.getText(), sightingPerson.getText(), sightingLocation.getText(), sightingDate.getText()));
     }
-    private String[] getQuery(String queryName) {
-    	String sql = "SELECT * FROM sightings WHERE \"" + queryName + "\"=name ORDER BY sighted desc LIMIT 10";
-        ArrayList<String> resList = new ArrayList<String>();
-    	
-        try (Connection conn = this.connect();
-            	Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
-            
-            // loop through the result set
-            while (rs.next()) {
-                resList.add(rs.getString("name") +  "\t" + 
-                                   rs.getString("person") + "\t" +
-                                   rs.getString("location") + "\t" /*+
-                                   rs.getDate("sighted")*/); //Commented date out because I was getting "error parsing time stamp"
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        String[] arr = (String[]) resList.toArray(new String[resList.size()]);
-    	return arr;
-    }
-    private String[] pullNames() {
-    	String sql = "SELECT comname FROM flowers;";
-        ArrayList<String> resList = new ArrayList<String>();
-    	
-        try (Connection conn = this.connect();
-        	Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
-            
-            // loop through the result set
-            while (rs.next()) {
-                resList.add(rs.getString("comname"));
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        String[] arr = resList.toArray(new String[resList.size()]);
-    	return arr;
-	}
-    private Connection connect() {
-        // SQLite connection string
-        String url = "jdbc:sqlite:db/a4.db";
-        Connection conn = null;
-        try {
-            conn = DriverManager.getConnection(url);
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-        return conn;
-    }
+    
+    
+    
     
     public static void main(String args[]) {
     	java.awt.EventQueue.invokeLater(new Runnable() {
@@ -247,7 +171,8 @@ public class Main extends javax.swing.JFrame {
             }
         });
     }
-    private static Connection conn;
+    
+    private DatabaseAPI db;
     private javax.swing.JComboBox<String> nameSelector;
     private javax.swing.JButton queryButton;
     private javax.swing.JTextArea queryResponse;
